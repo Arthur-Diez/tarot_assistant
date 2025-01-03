@@ -2,10 +2,10 @@ import React, { useReducer, useState, useEffect } from "react";
 import "./App.css";
 
 const initialState = {
-  deck: [], // Колода, которая придет от бота
+  deck: [],
   revealedCards: [],
   gameOver: false,
-  cardsToReveal: 0, // Количество карт для расклада
+  cardsToReveal: 0,
 };
 
 const gameReducer = (state, action) => {
@@ -13,16 +13,14 @@ const gameReducer = (state, action) => {
     case "INITIALIZE_GAME":
       return {
         ...state,
-        deck: action.payload.deck.map(card => ({ name: card, revealed: false })),
+        deck: action.payload.deck.map((card) => ({ name: card, revealed: false })),
         cardsToReveal: action.payload.cardsToReveal,
       };
-
     case "REVEAL_CARD":
       if (!state.deck[action.index].revealed && state.revealedCards.length < state.cardsToReveal) {
         const updatedDeck = state.deck.map((card, i) =>
           i === action.index ? { ...card, revealed: true } : card
         );
-
         const newRevealedCards = [...state.revealedCards, updatedDeck[action.index].name];
         const isGameOver = newRevealedCards.length === state.cardsToReveal;
 
@@ -34,10 +32,8 @@ const gameReducer = (state, action) => {
         };
       }
       return state;
-
     case "RESET_GAME":
       return initialState;
-
     default:
       return state;
   }
@@ -47,22 +43,27 @@ const App = () => {
   const [state, dispatch] = useReducer(gameReducer, initialState);
   const [showResults, setShowResults] = useState(false);
 
-  // Получение данных от Telegram WebApp
   useEffect(() => {
+    if (window.Telegram?.WebApp) {
+      window.Telegram.WebApp.ready();
+      console.log("Init Data:", window.Telegram.WebApp.initDataUnsafe);
+    }
+
     const urlParams = new URLSearchParams(window.location.search);
     const deckName = urlParams.get("deck_name");
     const topic = urlParams.get("topic");
     const spreadName = urlParams.get("spread_name");
-    const cardCount = urlParams.get("card_count");
     const cards = urlParams.get("cards")?.split(",") || [];
-  
-    console.log("URL Parameters:", { deckName, topic, spreadName, cardCount, cards });
-  
+
+    console.log("URL Parameters:", { deckName, topic, spreadName, cards });
+
     if (deckName && topic && spreadName && cards.length > 0) {
       dispatch({
         type: "INITIALIZE_GAME",
-        payload: { deck: cards, cardsToReveal: cards.length }
+        payload: { deck: cards, cardsToReveal: cards.length },
       });
+    } else {
+      console.error("Некорректные параметры URL.");
     }
   }, []);
 
@@ -74,12 +75,17 @@ const App = () => {
 
   const handleShowResults = () => {
     setShowResults(true);
+
     if (window.Telegram?.WebApp?.sendData) {
-      // Отправка данных назад в бота
-      window.Telegram.WebApp.sendData(JSON.stringify({ revealedCards: state.revealedCards }));
+      window.Telegram.WebApp.sendData(
+        JSON.stringify({ revealedCards: state.revealedCards })
+      );
     }
+
     if (window.Telegram?.WebApp?.close) {
       window.Telegram.WebApp.close();
+    } else {
+      console.log("Мини-приложение завершило работу.");
     }
   };
 
@@ -90,11 +96,7 @@ const App = () => {
         <div className="results">
           {state.revealedCards.map((card, index) => (
             <div key={index} className="result-card">
-              <img
-                src={`/cards/${card}.png`}
-                alt={card}
-                className="result-card-image"
-              />
+              <img src={`/cards/${card}.png`} alt={card} className="result-card-image" />
               <p>{card}</p>
             </div>
           ))}
@@ -115,18 +117,10 @@ const App = () => {
           >
             <div className="card-inner">
               <div className="card-front">
-                <img
-                  src={`/cards/${card.name}.png`}
-                  alt={card.name}
-                  className="card-image"
-                />
+                <img src={`/cards/${card.name}.png`} alt={card.name} className="card-image" />
               </div>
               <div className="card-back">
-                <img
-                  src="/cards/back.png"
-                  alt="Закрытая карта"
-                  className="card-image"
-                />
+                <img src="/cards/back.png" alt="Закрытая карта" className="card-image" />
               </div>
             </div>
           </div>
@@ -141,7 +135,6 @@ const App = () => {
   );
 };
 
-console.log('Init Data:', window.Telegram.WebApp.initDataUnsafe);
 export default App;
 
 
