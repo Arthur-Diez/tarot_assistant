@@ -74,9 +74,6 @@ const App = () => {
       // Отправка данных назад в бота
       window.Telegram.WebApp.sendData(JSON.stringify({ revealedCards: state.revealedCards }));
     }
-  };
-
-  const handleContinueToTelegram = () => {
     if (window.Telegram?.WebApp?.close) {
       window.Telegram.WebApp.close();
     }
@@ -98,9 +95,6 @@ const App = () => {
             </div>
           ))}
         </div>
-        <button onClick={handleContinueToTelegram} className="telegram-button">
-          Увидеть результат расклада
-        </button>
       </div>
     );
   }
@@ -143,6 +137,7 @@ const App = () => {
   );
 };
 
+console.log('Init Data:', window.Telegram.WebApp.initDataUnsafe);
 export default App;
 
 

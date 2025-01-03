@@ -1,63 +1,38 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
-import { initMiniApp, mockTelegramEnv, parseInitData } from '@telegram-apps/sdk';
+import { parseInitData } from '@telegram-apps/sdk';
 
-const initializeTelegramSDK = async () => {
-  try {
-    // Попытка инициализировать настоящее окружение Telegram
-    console.log("Инициализация окружения Telegram");
-    const [miniApp] = initMiniApp();
-    await miniApp.ready();
-  } catch (error) {
-    // В случае ошибки инициализируем фейковое окружение
-    console.error('Ошибка при инициализации Telegram:', error);
+const initData = window.Telegram?.WebApp?.initData || '';
+const parsedData = parseInitData(initData);
 
-    const initDataRaw = new URLSearchParams([
-      ['user', JSON.stringify({
-        id: 99281932,
-        first_name: 'Andrew',
-        last_name: 'Rogue',
-        username: 'rogue',
-        language_code: 'en',
-        is_premium: true,
-        allows_write_to_pm: true,
-      })],
-      ['hash', '89d6079ad6762351f38c6dbbc41bb53048019256a9443988af7a48bcad16ba31'],
-      ['auth_date', '1716922846'],
-      ['start_param', 'debug'],
-      ['chat_type', 'sender'],
-      ['chat_instance', '8428209589180549439'],
-    ]).toString();
+console.log('Данные, полученные от Telegram:', parsedData);
 
-    mockTelegramEnv({
-      themeParams: {
-        accentTextColor: '#6ab2f2',
-        bgColor: '#17212b',
-        buttonColor: '#5288c1',
-        buttonTextColor: '#ffffff',
-        destructiveTextColor: '#ec3942',
-        headerBgColor: '#fcb69f',
-        hintColor: '#708499',
-        linkColor: '#6ab3f3',
-        secondaryBgColor: '#232e3c',
-        sectionBgColor: '#17212b',
-        sectionHeaderTextColor: '#6ab3f3',
-        subtitleTextColor: '#708499',
-        textColor: '#f5f5f5',
-      },
-      initData: parseInitData(initDataRaw),
-      initDataRaw,
-      version: '7.2',
-      platform: 'tdesktop',
-    });
+const initializeTelegramWebApp = async () => {
+  if (window.Telegram?.WebApp) {
+    try {
+      const webApp = window.Telegram.WebApp;
 
-    console.log('Mock Telegram environment initialized');
+      // Готовим приложение
+      console.log("Инициализация WebApp...");
+      webApp.ready();
+
+      // Выводим информацию о пользователе
+      console.log("Данные пользователя:", webApp.initDataUnsafe);
+
+      // Устанавливаем тему
+      const theme = webApp.themeParams;
+      console.log("Параметры темы:", theme);
+    } catch (error) {
+      console.error("Ошибка при инициализации WebApp:", error);
+    }
+  } else {
+    console.error("Telegram WebApp API не доступен. Проверьте окружение.");
   }
 };
 
-// Инициализация SDK
-initializeTelegramSDK();
+// Инициализация Telegram WebApp
+initializeTelegramWebApp();
 
 const container = document.getElementById('root');
 const root = createRoot(container);
