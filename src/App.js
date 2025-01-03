@@ -49,15 +49,19 @@ const App = () => {
 
   // Получение данных от Telegram WebApp
   useEffect(() => {
-    if (window.Telegram?.WebApp) {
-      const initData = window.Telegram.WebApp.initDataUnsafe; // Получаем данные
-      const deck = initData?.deck || []; // Дефолтная пустая колода
-      const cardsToReveal = initData?.cardsToReveal || 3; // Дефолтное количество карт
-
-      // Инициализация игры с данными от Telegram
+    const urlParams = new URLSearchParams(window.location.search);
+    const deckName = urlParams.get("deck_name");
+    const topic = urlParams.get("topic");
+    const spreadName = urlParams.get("spread_name");
+    const cardCount = urlParams.get("card_count");
+    const cards = urlParams.get("cards")?.split(",") || [];
+  
+    console.log("URL Parameters:", { deckName, topic, spreadName, cardCount, cards });
+  
+    if (deckName && topic && spreadName && cards.length > 0) {
       dispatch({
         type: "INITIALIZE_GAME",
-        payload: { deck, cardsToReveal },
+        payload: { deck: cards, cardsToReveal: cards.length }
       });
     }
   }, []);
