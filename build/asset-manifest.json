@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/tarot-assistant/static/css/main.034690a2.css",
+    "main.js": "/tarot-assistant/static/js/main.62226343.js",
+    "static/media/back1.jpg": "/tarot-assistant/static/media/back1.d767b289966bb833f2bc.jpg",
+    "static/media/back.png": "/tarot-assistant/static/media/back.a03505b3bf75f813c361.png",
+    "index.html": "/tarot-assistant/index.html",
+    "main.034690a2.css.map": "/tarot-assistant/static/css/main.034690a2.css.map",
+    "main.62226343.js.map": "/tarot-assistant/static/js/main.62226343.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.034690a2.css",
+    "static/js/main.62226343.js"
+  ]
+}
