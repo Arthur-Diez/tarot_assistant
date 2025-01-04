@@ -87,10 +87,16 @@ const App = () => {
   };
 
   const handleReturnToBot = () => {
+    if (window.Telegram?.WebApp?.sendData) {
+      // Отправляем данные в бота
+      window.Telegram.WebApp.sendData(
+        JSON.stringify({ revealedCards: state.revealedCards })
+      );
+    }
+  
     if (window.Telegram?.WebApp?.close) {
+      // Закрываем мини-приложение
       window.Telegram.WebApp.close();
-    } else {
-      console.log("Возвращение в бота.");
     }
   };
 
