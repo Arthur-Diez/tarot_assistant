@@ -78,17 +78,11 @@ const App = () => {
   const handleShowResults = () => {
     setShowResults(true);
 
-    // Send data to Telegram bot and close WebApp
+    // Отправка данных в Telegram бота (но не закрываем приложение)
     if (window.Telegram?.WebApp?.sendData) {
       window.Telegram.WebApp.sendData(
         JSON.stringify({ revealedCards: state.revealedCards })
       );
-    }
-
-    if (window.Telegram?.WebApp?.close) {
-      window.Telegram.WebApp.close();
-    } else {
-      console.log("Мини-приложение завершило работу.");
     }
   };
 
