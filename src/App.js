@@ -44,11 +44,13 @@ const App = () => {
   const [showResults, setShowResults] = useState(false);
 
   useEffect(() => {
+    // Telegram WebApp API Initialization
     if (window.Telegram?.WebApp) {
       window.Telegram.WebApp.ready();
       console.log("Init Data:", window.Telegram.WebApp.initDataUnsafe);
     }
 
+    // Extract parameters from URL
     const urlParams = new URLSearchParams(window.location.search);
     const deckName = urlParams.get("deck_name");
     const topic = urlParams.get("topic");
@@ -76,6 +78,7 @@ const App = () => {
   const handleShowResults = () => {
     setShowResults(true);
 
+    // Send data to Telegram bot and close WebApp
     if (window.Telegram?.WebApp?.sendData) {
       window.Telegram.WebApp.sendData(
         JSON.stringify({ revealedCards: state.revealedCards })
@@ -86,6 +89,14 @@ const App = () => {
       window.Telegram.WebApp.close();
     } else {
       console.log("Мини-приложение завершило работу.");
+    }
+  };
+
+  const handleReturnToBot = () => {
+    if (window.Telegram?.WebApp?.close) {
+      window.Telegram.WebApp.close();
+    } else {
+      console.log("Возвращение в бота.");
     }
   };
 
@@ -101,6 +112,9 @@ const App = () => {
             </div>
           ))}
         </div>
+        <button onClick={handleReturnToBot} className="return-button">
+          Вернуться в бота
+        </button>
       </div>
     );
   }
