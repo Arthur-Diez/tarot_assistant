@@ -106,7 +106,7 @@ const App = () => {
             </div>
           ))}
         </div>
-        <button onClick={handleReturnToBot} className="return-button">
+        <button onClick={handleReturnToBot} className="results-button">
           Вернуться в бота
         </button>
       </div>
