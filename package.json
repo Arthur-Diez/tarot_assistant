@@ -2,7 +2,7 @@
   "name": "card-divination",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://arthur-diez.github.io/tarot-assistant",
+  "homepage": ".",
   "dependencies": {
     "@telegram-apps/sdk": "^2.11.1",
     "cra-template": "1.2.0",
