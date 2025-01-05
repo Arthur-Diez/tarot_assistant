@@ -87,33 +87,16 @@ const App = () => {
   };
 
   const handleReturnToBot = () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const deckName = urlParams.get("deck_name");
-    const spreadName = urlParams.get("spread_name");
-    const question = urlParams.get("question") || "Ваш вопрос из приложения";
-
-    const dataToSend = JSON.stringify({
-      revealedCards: state.revealedCards,
-      question: question,
-      deck_name: deckName,
-      spread_name: spreadName,
-    });
-
-    console.log("[DEBUG] Отправляем данные в бот:", dataToSend);
-
+    console.log("[DEBUG] Приложение закрыто");
+  
     if (window.Telegram?.WebApp?.sendData) {
-      try {
-        window.Telegram.WebApp.sendData(dataToSend);
-        console.log("[DEBUG] Данные успешно отправлены");
-      } catch (error) {
-        console.error("[ERROR] Ошибка отправки данных в бот:", error);
-      }
-    } else {
-      console.error("[ERROR] Telegram WebApp API недоступен");
+      // Отправляем только сигнал о закрытии
+      window.Telegram.WebApp.sendData(
+        JSON.stringify({ action: "close" })
+      );
     }
-
+  
     if (window.Telegram?.WebApp?.close) {
-      console.log("[DEBUG] Закрываем приложение");
       window.Telegram.WebApp.close();
     }
   };
