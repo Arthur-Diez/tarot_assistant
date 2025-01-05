@@ -50,15 +50,15 @@ const App = () => {
     const spreadName = urlParams.get("spread_name");
     const cards = urlParams.get("cards")?.split(",") || [];
   
-    console.log("URL Parameters:", { deckName, topic, spreadName, cards });
+    if (!deckName || !topic || !spreadName || cards.length === 0) {
+      console.error("[ERROR] Отсутствуют обязательные параметры в URL");
+    } else {
+      console.log("URL Parameters:", { deckName, topic, spreadName, cards });
   
-    if (deckName && topic && spreadName && cards.length > 0) {
       dispatch({
         type: "INITIALIZE_GAME",
         payload: { deck: cards, cardsToReveal: cards.length },
       });
-    } else {
-      console.error("Некорректные параметры URL.");
     }
   }, []);
 
@@ -70,30 +70,50 @@ const App = () => {
 
   const handleShowResults = () => {
     setShowResults(true);
-
-    // Отправка данных в Telegram бота (но не закрываем приложение)
+  
+    // Отправка данных в Telegram бота
     if (window.Telegram?.WebApp?.sendData) {
-      window.Telegram.WebApp.sendData(
-        JSON.stringify({ revealedCards: state.revealedCards })
-      );
+      try {
+        window.Telegram.WebApp.sendData(
+          JSON.stringify({ revealedCards: state.revealedCards })
+        );
+        console.log("[DEBUG] Данные успешно отправлены:", state.revealedCards);
+      } catch (error) {
+        console.error("[ERROR] Ошибка отправки данных в бота:", error);
+      }
+    } else {
+      console.error("[ERROR] Telegram WebApp API недоступен");
     }
   };
 
   const handleReturnToBot = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const deckName = urlParams.get("deck_name");
+    const spreadName = urlParams.get("spread_name");
+    const question = urlParams.get("question") || "Ваш вопрос из приложения";
+
+    const dataToSend = JSON.stringify({
+      revealedCards: state.revealedCards,
+      question: question,
+      deck_name: deckName,
+      spread_name: spreadName,
+    });
+
+    console.log("[DEBUG] Отправляем данные в бот:", dataToSend);
+
     if (window.Telegram?.WebApp?.sendData) {
-      // Отправляем данные в бота
-      window.Telegram.WebApp.sendData(
-        JSON.stringify({
-          revealedCards: state.revealedCards,
-          question: "Ваш вопрос из приложения",
-          deck_name: "Уэйта-Смита",
-          spread_name: "Трикарточный",
-        })
-      );
+      try {
+        window.Telegram.WebApp.sendData(dataToSend);
+        console.log("[DEBUG] Данные успешно отправлены");
+      } catch (error) {
+        console.error("[ERROR] Ошибка отправки данных в бот:", error);
+      }
+    } else {
+      console.error("[ERROR] Telegram WebApp API недоступен");
     }
-  
+
     if (window.Telegram?.WebApp?.close) {
-      // Закрываем мини-приложение
+      console.log("[DEBUG] Закрываем приложение");
       window.Telegram.WebApp.close();
     }
   };
