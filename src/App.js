@@ -44,21 +44,14 @@ const App = () => {
   const [showResults, setShowResults] = useState(false);
 
   useEffect(() => {
-    // Telegram WebApp API Initialization
-    if (window.Telegram?.WebApp) {
-      window.Telegram.WebApp.ready();
-      console.log("Init Data:", window.Telegram.WebApp.initDataUnsafe);
-    }
-
-    // Extract parameters from URL
     const urlParams = new URLSearchParams(window.location.search);
     const deckName = urlParams.get("deck_name");
     const topic = urlParams.get("topic");
     const spreadName = urlParams.get("spread_name");
     const cards = urlParams.get("cards")?.split(",") || [];
-
+  
     console.log("URL Parameters:", { deckName, topic, spreadName, cards });
-
+  
     if (deckName && topic && spreadName && cards.length > 0) {
       dispatch({
         type: "INITIALIZE_GAME",
@@ -90,7 +83,12 @@ const App = () => {
     if (window.Telegram?.WebApp?.sendData) {
       // Отправляем данные в бота
       window.Telegram.WebApp.sendData(
-        JSON.stringify({ revealedCards: state.revealedCards })
+        JSON.stringify({
+          revealedCards: state.revealedCards,
+          question: "Ваш вопрос из приложения",
+          deck_name: "Уэйта-Смита",
+          spread_name: "Трикарточный",
+        })
       );
     }
   
