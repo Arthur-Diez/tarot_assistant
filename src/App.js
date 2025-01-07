@@ -90,28 +90,15 @@ const App = () => {
     console.log("[DEBUG] Приложение закрыто");
   
     if (window.Telegram?.WebApp?.sendData) {
-      // Отправляем данные с действием "close"
-      try {
-        window.Telegram.WebApp.sendData(
-          JSON.stringify({ action: "close" })
-        );
-        console.log("[DEBUG] Данные о закрытии успешно отправлены");
-      } catch (error) {
-        console.error("[ERROR] Ошибка при отправке данных в Telegram WebApp:", error);
-      }
-    } else {
-      console.error("[ERROR] Telegram WebApp API недоступен для отправки данных");
+      // Отправляем только сигнал о закрытии
+      window.Telegram.WebApp.sendData(
+        JSON.stringify({ action: "close" })
+      );
     }
   
-    // Добавляем задержку перед закрытием приложения
-    setTimeout(() => {
-      if (window.Telegram?.WebApp?.close) {
-        window.Telegram.WebApp.close();
-        console.log("[DEBUG] Telegram WebApp закрыт");
-      } else {
-        console.error("[ERROR] Telegram WebApp API недоступен для закрытия приложения");
-      }
-    }, 500); // Задержка в 500 мс
+    if (window.Telegram?.WebApp?.close) {
+      window.Telegram.WebApp.close();
+    }
   };
 
   if (showResults) {
@@ -127,7 +114,7 @@ const App = () => {
           ))}
         </div>
         <button onClick={handleReturnToBot} className="results-button">
-          Вернуться в бота
+          Посмотреть результат расклада
         </button>
       </div>
     );
@@ -156,7 +143,7 @@ const App = () => {
       </div>
       {state.gameOver && !showResults && (
         <button onClick={handleShowResults} className="results-button">
-          Посмотреть результаты
+          Посмотреть карты
         </button>
       )}
     </div>
