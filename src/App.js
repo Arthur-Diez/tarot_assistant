@@ -90,15 +90,28 @@ const App = () => {
     console.log("[DEBUG] Приложение закрыто");
   
     if (window.Telegram?.WebApp?.sendData) {
-      // Отправляем только сигнал о закрытии
-      window.Telegram.WebApp.sendData(
-        JSON.stringify({ action: "close" })
-      );
+      // Отправляем данные с действием "close"
+      try {
+        window.Telegram.WebApp.sendData(
+          JSON.stringify({ action: "close" })
+        );
+        console.log("[DEBUG] Данные о закрытии успешно отправлены");
+      } catch (error) {
+        console.error("[ERROR] Ошибка при отправке данных в Telegram WebApp:", error);
+      }
+    } else {
+      console.error("[ERROR] Telegram WebApp API недоступен для отправки данных");
     }
   
-    if (window.Telegram?.WebApp?.close) {
-      window.Telegram.WebApp.close();
-    }
+    // Добавляем задержку перед закрытием приложения
+    setTimeout(() => {
+      if (window.Telegram?.WebApp?.close) {
+        window.Telegram.WebApp.close();
+        console.log("[DEBUG] Telegram WebApp закрыт");
+      } else {
+        console.error("[ERROR] Telegram WebApp API недоступен для закрытия приложения");
+      }
+    }, 500); // Задержка в 500 мс
   };
 
   if (showResults) {
